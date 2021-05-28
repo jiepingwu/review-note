@@ -1,7 +1,7 @@
 查看本地分支和远程分支
 git branch -al 查看本地和远程的所有分支
 
-将远程分支和本地分支进行关联(和origin/main关联)
+将远程分支和本地分支进行关联(和origin/main关联) -- 同时拉取远程分支到本地
 git pull origin main
 
 查看本地分支和远程分支，绑定
@@ -14,3 +14,4 @@ git push 提交到远程绑定的分支main
 
 如果没有本地和远程分支绑定，git push origin main:main
 git push <远程主机名><本地分支名><远程分支名>
+
