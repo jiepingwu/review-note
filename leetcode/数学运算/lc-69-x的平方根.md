@@ -78,7 +78,7 @@ class Solution {
 
 ##### Solution 3
 
-使用 exp 和 ln 代替 sqrt：
+使用 exp 和 ln 代替 sqrt:
 
 ![image-20210530133821638](C:\Users\wwwjp\AppData\Roaming\Typora\typora-user-images\image-20210530133821638.png)
 
@@ -89,7 +89,7 @@ class Solution {
 ```java
 public int mySqrt(int x) {
     if (x == 0) return 0;
-    int ans = (int) Math.exp(0.5 * Math.log(x));
+    int ans = (int) Math.exp(0.5 * Math.log(x));	// 使用exp 和 ln 简介的求出 sqrt()
     return (long) (ans + 1) * (ans + 1) <= x ? ans + 1 : ans;
 }
 ```
