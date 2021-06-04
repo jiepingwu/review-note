@@ -186,7 +186,7 @@ protected final int tryAcquireShared(int unused) {
             firstReader = current;
             firstReaderHoldCount = 1;
         } else if (firstReader == current) {
-            firstReaderHoldCount++;
+            firstReaderHoldCount++;	// 此处使用 ThreadLocal 记录本地线程读锁状态计算
         } else {
             HoldCounter rh = cachedHoldCounter;
             if (rh == null || rh.tid != getThreadId(current))
@@ -229,4 +229,136 @@ final boolean apparentlyFirstQueuedIsExclusive() {
 **此时，就将请求读锁的线程阻塞。**
 
 这种机制的实现是为了：**提高写锁的获取优先级，防止写锁饥饿**。毕竟 读多写少。
+
+
+
+##### ThreadLocal 记录本地 线程同步状态计数
+
+由于读锁是共享的，为了记录每个线程 本身持有的锁状态计数，这里使用 **ThreadLocal** 来记录。
+
+key 为 ThreadLocal threadLocalHoldCounter 对象，value为 HoldCounter，其中持有 状态计数count 和 对应的线程 id。
+
+![img](https://rgyb.sunluomeng.top/20200621165753.png)
+
+
+
+##### 读写锁的升级和降级
+
+读锁是可以被多线程共享的，而写锁是线程独占的，也就是说 写锁 的并发限制比 读锁 高。
+
+所以，从读锁可以升级为 写锁，从 写锁可以降级为 读锁。
+
+![img](https://rgyb.sunluomeng.top/20200621173215.png)
+
+先完善一下开头的ReentrantReadWriteLock 的例子。
+
+```java
+public static final Object get(String key) {
+    Object obj = null;
+    r1.lock();
+    try {
+        // 获取缓存中的值
+        obj = cache.get(key);
+    } finally {
+        r1.unlock();
+    }
+    // 如果缓存命中，直接返回
+    if (obj != null) {
+        return obj;
+    }
+    
+    // 缓存没有命中，通过写锁查询DB，并将其写入缓存中
+    w1.lock();
+    try {
+        // 再次尝试获取缓存中的值
+        obj = cache.get(key);
+        if (obj == null) {
+            obj = getDataFromDB(key); // 从DB中查询数据
+            cache.put(key, obj);
+        }
+    } finally {
+        w1.unlock();
+    }
+    return obj;
+}
+```
+
+为什么在写锁里面，还要再次获取缓存中的值呢？
+
+这里的 double check 的原因是：**可能多线程同时执行到 get方法，其中只有一个线程获取锁执行get，这个时候cache已经更新了。也就是说，可以获取到锁的时候，其它线程已经更新了cache。**
+
+**如下图：线程A，B，C同时尝试获取写锁w1，此时只有A线程获取写锁，B,C线程阻塞，等到B，C线程获取到锁的时候，缓存cache已经被线程A更新了。也就不需要再次getDataFromDB，然后更新缓存了，这里可能可以减少一次DB操作。**
+
+![image-20210601191425580](..\references-figures\image-20210601191425580.png)
+
+###### 锁升级
+
+那我们能不能这样，直接在获取读锁时，如果缓存没有命中，直接获取写锁然后从DB中查询然后更新缓存？
+
+不行，因为 **获取一个写锁需要先释放全部的读锁！**
+
+如果两个获取了读锁的线程同时尝试获取写锁，且都不释放读锁时，就会发生死锁。
+
+所以，锁的直接升级是不允许的（即持有读锁状态下不允许获取写锁，需要先释放全部读锁）
+
+
+
+###### 锁降级
+
+锁降级可以吗？
+
+下面是 Oracle官方锁降级示例：
+
+```java
+class CachedData {
+    Object data;
+    volatile boolean cacheValid;
+    final ReentrantReadWriteLock rw = new ReentrantReadWriteLock();
+    
+    void processCachedData() {
+        rw.readLock().lock(); // read lock
+        if (!cacheValid) {
+            // 必须在获取写锁之前释放读锁，因为锁升级不被允许
+			rw.readLock().unlock();
+            rw.writeLock().lock();
+            try {
+                // check again，因为其它线程可能已经更新缓存
+                if (!cacheValid) {
+                    data = ...;
+                    cacheValid = true;
+                }
+                // 释放写锁前，降级为读锁
+                rw.readLock().lock();
+            } finally {
+                rw.writeLock().unlock();
+            }
+        }
+        try {
+            use(data);
+        } finally {
+            rw.readLock().unlock();
+        }
+    }
+}
+```
+
+1. 首先获取读锁，如果cache不可用，则释放读锁。
+2. 获取写锁。
+3. 更新cache之前，再检查cache是否可用，因为其它线程可以已经更新cache。然后更新cache，将更新标志位cacheValied置为true。
+4. 然后在 **释放写锁前获取读锁**
+5. 此时cache可用，处理cache中数据，然后释放读锁。
+
+这是整个锁降级的过程，关键就是 **释放写锁前要先获取读锁，目的是为了保证数据的可见性。**
+
+为什么这样做能保证数据的可见性呢？或者说我们不这样，在释放写锁前如果不获取读锁会怎么样？
+
+​	如果线程A在更新了 cache 之后，没有获取读锁，直接释放了写锁，假设此时另一个线程B获取了写锁并修改了数据，那么线程A将无法感知到数据被修改，但是线程A还应用了cache数据，就可能导致数据错误。
+
+​	而如果我们遵循锁降级，线程A在更新了cache之后，先获取读锁，再释放写锁，那么线程B获取写锁时将被阻塞，知道线程A处理完数据后释放读锁，线程B才能获取到写锁修改数据，保证数据的可见性和正确性。
+
+
+
+那么：**读写锁一定要进行锁降级吗？**
+
+​	这里其实不一定，我们通过上面过程发现，锁降级其实是保证了 线程中的视图操作，即 我们如果想 在一个线程中进行一个按照一致性视图数据的操作，就需要锁降级，防止其它线程在当前线程操作数据时修改了数据。相反，如果我们不需要 保证一致性视图，就不需要使用锁降级，也就是说允许当前线程实时地读到其它线程的修改。
 

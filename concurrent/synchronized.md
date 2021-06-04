@@ -1,4 +1,4 @@
-#### Synchronized
+### Synchronized
 
 ​	synchronized是jvm内置的互斥锁，提供了可见性和原子性。
 
