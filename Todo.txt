@@ -1,0 +1,12 @@
+1. MySQL 16 and 17
+2. 每日一题 leetcode
+3. concurrent 
+	concurrentHashMap
+	concurrentLinkedQueue
+	concurrentSkipListMap
+背包问题
+https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&__biz=MzU4NDE3MTEyMA==&scene=23&album_id=1751702161341628417&count=3#wechat_redirect
+七大排序
+http://mp.weixin.qq.com/s?__biz=MzAxNjk4ODE4OQ==&mid=2247485203&idx=1&sn=56a66cc9fe8177749b07c2bb9b7449d0&chksm=9bed2661ac9aaf77ca53fb718bb2c552608f58a4c49cdb34ca653a33fb8099bcdc70dec65373&mpshare=1&scene=23&srcid=0606UvUJkaPSakZVTz3P9ysr&sharer_sharetime=1622955451515&sharer_shareid=1cf0bd00b604370281c4b57a41b7b89f#rd
+4. 网络	视频+图解
+5. os	图解
