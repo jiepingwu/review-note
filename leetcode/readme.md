@@ -30,8 +30,6 @@ ref：[代码随想录]**https://github.com/youngyangyang04/leetcode-master**
 
 * [两数之和](https://leetcode-cn.com/problems/two-sum/)（近半年内，字节跳动在面试中考查此题达到 152 次）
 
-* [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)（腾讯、百度、字节跳动在近半年内面试常考）
-
 * **Linked List 实战题目**
 
 * [反转链表](https://leetcode.com/problems/reverse-linked-list/)（字节跳动、亚马逊在半年内面试常考）
@@ -40,7 +38,9 @@ ref：[代码随想录]**https://github.com/youngyangyang04/leetcode-master**
 
 * [环形链表](https://leetcode.com/problems/linked-list-cycle)（阿里巴巴、字节跳动、腾讯在半年内面试常考）
 
-* [环形链表 II](https://leetcode.com/problems/linked-list-cycle-ii)[K 个一组翻转链表](https://leetcode.com/problems/reverse-nodes-in-k-group/)（字节跳动、猿辅导在半年内面试常考）
+* [环形链表 II](https://leetcode.com/problems/linked-list-cycle-ii)
+  
+* [K 个一组翻转链表](https://leetcode.com/problems/reverse-nodes-in-k-group/)（字节跳动、猿辅导在半年内面试常考）
   **1.2 栈、队列、优先队列、双端队列**
 
 * [Java 的 PriorityQueue 文档](http://docs.oracle.com/javase/10/docs/api/java/util/PriorityQueue.html)
@@ -214,9 +214,14 @@ ref：[代码随想录]**https://github.com/youngyangyang04/leetcode-master**
 
 * **[搜索二维矩阵](https://leetcode-cn.com/problems/search-a-2d-matrix/)（亚马逊、微软、Facebook 在半年内面试中考过）**
 
-* **[寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)（亚马逊、微软、字节跳动在半年内面试中考过）
-  **简单：
-
+* **[寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)（亚马逊、微软、字节跳动在半年内面试中考过）**
+  
+  
+  
+  ##### **6 动态规划**
+  
+* 简单：
+  
 * **[柠檬水找零](https://leetcode-cn.com/problems/lemonade-change/description/)（亚马逊在半年内面试中考过）**
 
 * **[买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/description/)[ ](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/description/)（亚马逊、字节跳动、微软在半年内面试中考过）**
@@ -247,7 +252,7 @@ ref：[代码随想录]**https://github.com/youngyangyang04/leetcode-master**
 
 * [跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii/)[ ](https://leetcode-cn.com/problems/jump-game-ii/)（亚马逊、华为、字节跳动在半年内面试中考过）
 
-  ##### **6 动态规划**
+  ##### 
 
   ##### **7.1 字典树和并查集**
 
