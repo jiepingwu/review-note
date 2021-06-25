@@ -325,7 +325,7 @@ ref：[代码随想录]**https://github.com/youngyangyang04/leetcode-master**
 
   ##### **7.3 红黑树和AVL树**
 
-* [维基百科：平衡树](https://en.wikipedia.org/wiki/Self-balancing_binary_search_tree)红黑树和AVL树的实现和特性总结(**TODO**)
+* [维基百科：平衡树](https://en.wikipedia.org/wiki/Self-balancing_binary_search_tree)红黑树和AVL树的实现和特性总结
 
   ##### **8.1 位运算**
 
